@@ -1,0 +1,8 @@
+# Local/development overlay. It builds the image from this working tree.
+# Production must use compose.yaml with a tagged image instead.
+services:
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: coliseum-bot:local

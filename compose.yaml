@@ -1,0 +1,57 @@
+name: coliseum
+
+services:
+  bot:
+    # Production uses an immutable tagged image. Build locally only with
+    # compose.local.yaml; the VPS must not clone this repository or pip install.
+    image: ${COLISEUM_IMAGE:-coliseum-bot:1.0.0}
+
+    # Private host file, owned by the deploy user (or root), chmod 600.
+    # Never commit it; it is outside the image, repo and backup tree.
+    env_file:
+      - ${COLISEUM_ENV_FILE:-/opt/coliseum/secrets/bot.env}
+
+    environment:
+      # External SQLite path; the source package directory stays read-only.
+      STUDY_BOT_DB_PATH: /data/database.db
+      PYTHONUNBUFFERED: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONUTF8: "1"
+
+    # Same numeric identity as the image and the host bind-mount ownership.
+    user: "10001:10001"
+
+    # tini as PID 1 gives correct SIGTERM forwarding/reaping to Python.
+    init: true
+    restart: unless-stopped
+    stop_grace_period: 30s
+
+    # Only /data, /app/storage and the small tmpfs are writable.
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m,mode=1777
+
+    volumes:
+      # SQLite database and its -wal/-shm sidecars live together.
+      - type: bind
+        source: ${COLISEUM_DATA_DIR:-/opt/coliseum/data}
+        target: /data
+      # storage/order_archives and storage/export_tmp live together.
+      - type: bind
+        source: ${COLISEUM_STORAGE_DIR:-/opt/coliseum/storage}
+        target: /app/storage
+
+    # No inbound ports: the bot uses Telegram long polling.
+    # No healthcheck: there is no truthful local readiness endpoint; do not
+    # poll Telegram from a healthcheck. restart handles process crashes.
+    cap_drop:
+      - ALL
+    security_opt:
+      - "no-new-privileges:true"
+    pids_limit: 256
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"

@@ -1,0 +1,65 @@
+# Environment variables and secrets
+.env
+.env.*
+*.env
+*.env.*
+!deploy/bot.env.example
+!deploy/bot.env.production.example
+
+secrets/
+credentials/
+*.pem
+*.key
+*.p12
+*.pfx
+*.token
+*credentials*.json
+secrets*.json
+id_rsa*
+id_ed25519*
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+.coverage*
+htmlcov/
+
+# Databases and runtime data
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+*.sqlite-*
+*.sqlite3-*
+*.wal
+*.shm
+*.journal
+*.dump
+storage/
+backups/
+logs/
+*.log
+
+# Local exports, backups and archives
+*.bak
+*.backup
+*.zip
+*.rar
+*.7z
+*.tar
+*.tar.gz
+*.gz
+
+# Recovery and temporary files
+.recovery_snapshot*/
+.checkpoint*/
+checkpoints/
+*.tmp
+*:Zone.Identifier

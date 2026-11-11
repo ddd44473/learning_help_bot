@@ -119,8 +119,7 @@ deploy/**
 scripts
 scripts/**
 pytest.ini
-requirements-dev-audit.txt
-requirements-test-phase2.txt
+requirements-dev.txt
 compilation.txt
 howtocompilate.txt
 *.md
